@@ -18,5 +18,6 @@ pluginManagement{
         kotlin("jvm") version "1.3.50"
         `java-library`
         application
+        id("com.github.johnrengelman.shadow") version "5.2.0"
     }
 }
