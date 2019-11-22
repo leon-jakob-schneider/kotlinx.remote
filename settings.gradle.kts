@@ -12,3 +12,11 @@ rootProject.name = "kotlinx.remote"
 include(":compiler-plugin")
 include(":remote")
 include(":test")
+
+pluginManagement{
+    plugins{
+        kotlin("jvm") version "1.3.50"
+        `java-library`
+        application
+    }
+}
