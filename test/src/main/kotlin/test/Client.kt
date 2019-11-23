@@ -1,30 +1,20 @@
 package test
 
-import kotlinx.remote.compiler.*
+import kotlinx.remote.compiler.acceptKTRConnection
+import kotlinx.remote.compiler.asKTRConnection
+import java.net.ServerSocket
+import java.net.Socket
 
-@Remote
-interface SomeRemoteInterface{
-
-    fun doSomething()
-    fun doSomethingElse()
-}
-
-class ServiceRegistry{
-
-    var mainListener: (ByteArray) -> Unit = {packet -> println(packet.joinToString { String.format("%02X", it) })}
-
-    fun <T> getRemoteService(remoteFactory: RemoteFactory<T>):T = remoteFactory.createRemoteService(object : RemoteService {
-        override var listener: (ByteArray) -> Unit = mainListener
-    })
-}
 
 fun main() {
-    val serviceRegistry = ServiceRegistry()
-    val remote: SomeRemoteInterface = serviceRegistry.getRemoteService(SomeRemoteInterface)
+    val socket = Socket("localhost", 6789)
 
-    remote.doSomething()
-    remote.doSomethingElse()
-    remote.doSomething()
-    remote.doSomething()
-    println("finished")
+    val connection = socket.asKTRConnection()
+
+    val someRemoteImplementation = connection.getRemoteService(SomeRemoteInterface_r)
+
+    Thread.sleep(1000)
+    someRemoteImplementation.doSomething()
+    someRemoteImplementation.doSomethingElse()
+    Thread.sleep(1000)
 }

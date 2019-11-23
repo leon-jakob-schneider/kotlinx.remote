@@ -1,13 +1,25 @@
 package test
 
 import kotlinx.remote.compiler.*
+import java.net.ServerSocket
 
+class SomeRemoteImplementation : SomeRemoteInterface {
+    override fun doSomething() {
+        println("doSomething")
+    }
+
+    override fun doSomethingElse() {
+        println("doSomethingElse")
+    }
+}
 
 fun main() {
-    val serviceRegistry = ServiceRegistry()
-    val remote: SomeRemoteInterface = serviceRegistry.getRemoteService(SomeRemoteInterface)
+    val socketServer = ServerSocket(6789)
 
-    remote.doSomething()
-    remote.doSomethingElse()
-    println("finished")
+    val connection = socketServer.acceptKTRConnection()
+
+    val someImplementation = SomeRemoteImplementation()
+    connection.registerService(SomeRemoteInterface_r, someImplementation)
+
+    Thread.sleep(100000)
 }
