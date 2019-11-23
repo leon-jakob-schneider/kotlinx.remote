@@ -1,20 +1,15 @@
 plugins {
     kotlin("jvm")
-    application
     id("com.github.johnrengelman.shadow")
 }
 
 dependencies {
-    compileOnly(kotlin("stdlib"))
+    implementation(kotlin("stdlib"))
     compileOnly("io.arrow-kt:arrow-annotations:0.10.3")
-    compileOnly(project(":remote"))
+    implementation(project(":remote"))
 
     // To run :create-plugin:shadowJar when building this project
     api(project(":compiler-plugin", "shadow"))
-}
-
-application {
-    mainClassName = "test.AppKt"
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
@@ -24,6 +19,16 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     }
 }
 
-tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
-    configurations = listOf(project.configurations.compileOnly.get())
+tasks{
+    val runClient by creating(JavaExec::class){
+        main = "test.ClientKt"
+        group = "application"
+        classpath = files(findByName("shadowJar"))
+    }
+
+    val runServer by creating(JavaExec::class){
+        main = "test.ServerKt"
+        group = "application"
+        classpath = files(findByName("shadowJar"))
+    }
 }

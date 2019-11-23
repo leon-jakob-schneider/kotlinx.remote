@@ -24,5 +24,7 @@ fun main() {
 
     remote.doSomething()
     remote.doSomethingElse()
+    remote.doSomething()
+    remote.doSomething()
     println("finished")
 }
