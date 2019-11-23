@@ -1,20 +1,26 @@
 package test
 
+import io.ktor.network.selector.ActorSelectorManager
+import io.ktor.network.sockets.aSocket
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlinx.remote.compiler.acceptKTRConnection
 import kotlinx.remote.compiler.asKTRConnection
 import java.net.ServerSocket
 import java.net.Socket
 
 
-fun main() {
-    val socket = Socket("localhost", 6789)
+fun main() = runBlocking{
+    val socket = aSocket(ActorSelectorManager(Dispatchers.IO)).tcp().connect("localhost", 6789)
 
     val connection = socket.asKTRConnection()
 
     val someRemoteImplementation = connection.getRemoteService(SomeRemoteInterface_r)
 
-    Thread.sleep(1000)
+    delay(1000)
     someRemoteImplementation.doSomething()
+    delay(1000)
     someRemoteImplementation.doSomethingElse()
-    Thread.sleep(1000)
+    delay(1000)
 }

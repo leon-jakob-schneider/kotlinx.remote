@@ -5,4 +5,5 @@ plugins {
 
 dependencies {
     compileOnly(kotlin("stdlib"))
+    api("io.ktor:ktor-network:1.2.4")
 }

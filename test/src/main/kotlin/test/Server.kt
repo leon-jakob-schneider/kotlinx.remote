@@ -1,5 +1,10 @@
 package test
 
+import io.ktor.network.selector.ActorSelectorManager
+import io.ktor.network.sockets.aSocket
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlinx.remote.compiler.*
 import java.net.ServerSocket
 
@@ -13,13 +18,13 @@ class SomeRemoteImplementation : SomeRemoteInterface {
     }
 }
 
-fun main() {
-    val socketServer = ServerSocket(6789)
+fun main() = runBlocking{
+    val socketServer = aSocket(ActorSelectorManager(Dispatchers.IO)).tcp().bind("localhost", 6789)
 
     val connection = socketServer.acceptKTRConnection()
 
     val someImplementation = SomeRemoteImplementation()
     connection.registerService(SomeRemoteInterface_r, someImplementation)
 
-    Thread.sleep(100000)
+    delay(100000)
 }

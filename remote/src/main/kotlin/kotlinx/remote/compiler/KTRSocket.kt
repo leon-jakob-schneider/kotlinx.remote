@@ -1,37 +1,43 @@
 package kotlinx.remote.compiler
 
-import java.io.DataOutputStream
-import java.net.ServerSocket
-import java.net.Socket
-import java.net.SocketException
+import io.ktor.network.sockets.ServerSocket
+import io.ktor.network.sockets.Socket
+import io.ktor.network.sockets.openReadChannel
+import io.ktor.network.sockets.openWriteChannel
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.io.readAvailable
+import kotlinx.coroutines.launch
 
 
-fun ServerSocket.acceptKTRConnection(): IKTRConnection{
+suspend fun ServerSocket.acceptKTRConnection(): IKTRConnection{
     println("waiting for client")
     return accept().asKTRConnection()
 }
 
-fun Socket.asKTRConnection(): IKTRConnection{
+suspend fun Socket.asKTRConnection(): IKTRConnection{
     println("converting socket to ktrconnection")
 
-    val inFromClient = getInputStream()
-    val outToClient = DataOutputStream(getOutputStream())
-    val output:(ByteArray) -> Unit = {bytes -> println("out: ${bytes.joinToString { String.format("%02X", it) }}");outToClient.write(bytes);outToClient.flush() }
+    val inFromClient = openReadChannel()
+    val outToClient = openWriteChannel()
+    val output:suspend (ByteArray) -> Unit = {
+        bytes -> println("out: ${bytes.joinToString { String.format("%02X", it) }}")
+        outToClient.writeFully(bytes, 0, bytes.size)
+        outToClient.flush()
+    }
 
     val ktrConnection = KTRConnection(output)
-    Thread{
+
+    GlobalScope.launch {
         try {
-            val buffer = ByteArray(8192)
+            val buffer = ByteArray(8000)
             while (true) {
-                val bytesRead = inFromClient.read(buffer)
+                val bytesRead = inFromClient.readAvailable(buffer)
                 val bytes = buffer.slice(0 until bytesRead).toByteArray()
-                println("out: ${bytes.joinToString { String.format("%02X", it) }}")
-                if (bytes.isEmpty())
-                    Thread.sleep(10)
-                else
-                    ktrConnection.receiveData(bytes)
+                println("in: ${bytes.joinToString { String.format("%02X", it) }}")
+                ktrConnection.receiveData(bytes)
             }
-        }catch (e: SocketException){}
-    }.run { isDaemon=true; start() }
+        } catch (e: Throwable) { }
+    }
+
     return ktrConnection
 }
