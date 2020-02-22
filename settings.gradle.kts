@@ -15,7 +15,8 @@ include(":test")
 
 pluginManagement{
     plugins{
-        kotlin("jvm") version "1.3.50"
+        kotlin("jvm") version "1.3.61"
+        kotlin("kapt") version "1.3.61"
         `java-library`
         application
         id("com.github.johnrengelman.shadow") version "5.2.0"

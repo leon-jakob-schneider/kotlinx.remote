@@ -1,6 +1,7 @@
 package test
 
 import kotlinx.remote.compiler.*
+import kotlinx.remote.compiler.packet.*
 
 @Remote
 interface SomeRemoteInterface{

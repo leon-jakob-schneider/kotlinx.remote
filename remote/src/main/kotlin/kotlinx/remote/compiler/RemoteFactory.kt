@@ -2,6 +2,6 @@ package kotlinx.remote.compiler
 
 
 interface RemoteFactory<T>{
-    fun createRemoteService(remoteService: RemoteService):T
-    fun registerRemoteService(service: T): RemoteImplementation
+    fun createRemoteService(remoteService: RemoteService):T = TODO()
+    fun registerRemoteService(service: T): RemoteImplementation = TODO()
 }

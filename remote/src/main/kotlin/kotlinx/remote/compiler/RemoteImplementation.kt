@@ -1,5 +1,5 @@
 package kotlinx.remote.compiler
 
 interface RemoteImplementation{
-    fun receiveData(data: ByteArray)
+    fun call(id: Byte, callScope: CallScope)
 }

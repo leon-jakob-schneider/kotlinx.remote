@@ -5,13 +5,14 @@ import io.ktor.network.sockets.aSocket
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import kotlinx.remote.compiler.acceptKTRConnection
+import kotlinx.remote.compiler.RemoteFactory
 import kotlinx.remote.compiler.asKTRConnection
-import java.net.ServerSocket
-import java.net.Socket
 
+//fun generate():Nothing = TODO()
+//
+//val someValue: RemoteFactory<SomeRemoteInterface> = generate()
 
-fun main() = runBlocking{
+suspend fun main() = runBlocking{
     val socket = aSocket(ActorSelectorManager(Dispatchers.IO)).tcp().connect("localhost", 6789)
 
     val connection = socket.asKTRConnection()
